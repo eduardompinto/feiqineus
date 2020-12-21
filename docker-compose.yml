@@ -1,0 +1,11 @@
+version: "3"
+services:
+  postgres:
+    image: postgres:11.4-alpine
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USERNAME=postgres
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql

@@ -8,12 +8,21 @@ import (
 	"net/http"
 )
 
-const ContentType = "Content-Type"
-const ApplicationJson = "application/json"
-const ApplicationText = "application/text"
+const contentType = "Content-Type"
+const applicationJSON = "application/json"
+const applicationText = "application/text"
 
-type SuspiciousReceiver struct{}
+// SuspiciousReceiver handler to receive suspicious news
+type SuspiciousReceiver struct {
+	db Database
+}
 
+// NewSuspiciousReceiver constructor to keep db unexported
+func NewSuspiciousReceiver(db Database) *SuspiciousReceiver {
+	return &SuspiciousReceiver{db: db}
+}
+
+// ServeHTTP handle POST requests, hashes the content and store it on db
 func (h *SuspiciousReceiver) ServeHTTP(wr http.ResponseWriter, req *http.Request) {
 	switch req.Method {
 	case http.MethodPost:
@@ -27,7 +36,7 @@ func (h *SuspiciousReceiver) ServeHTTP(wr http.ResponseWriter, req *http.Request
 
 func (h *SuspiciousReceiver) handlePost(wr http.ResponseWriter, req *http.Request) {
 	defer closeReq(req)
-	wr.Header().Add(ContentType, ApplicationJson)
+	wr.Header().Add(contentType, applicationJSON)
 
 	b, err := ioutil.ReadAll(req.Body)
 	if err != nil {
@@ -66,7 +75,7 @@ func writeSimpleResponse(wr http.ResponseWriter, msg string, status int) {
 		return
 	}
 	log.Println("can't marshal json response")
-	wr.Header().Add(ContentType, ApplicationText)
+	wr.Header().Add(contentType, applicationText)
 	_, err = io.WriteString(wr, msg)
 	if err != nil {
 		log.Println("can't write response body")

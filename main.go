@@ -8,8 +8,10 @@ import (
 )
 
 func main() {
+	db := internal.Database{}
+	defer db.Close()
 	mux := http.DefaultServeMux
-	mux.Handle("/suspicious", &internal.SuspiciousReceiver{})
+	mux.Handle("/suspicious", internal.NewSuspiciousReceiver(db))
 	s := &http.Server{
 		Addr:           ":8080",
 		Handler:        mux,
