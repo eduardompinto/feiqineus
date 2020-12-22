@@ -14,12 +14,12 @@ const applicationText = "application/text"
 
 // SuspiciousReceiver handler to receive suspicious news
 type SuspiciousReceiver struct {
-	db Database
+	replier *Replier
 }
 
 // NewSuspiciousReceiver constructor to keep db unexported
-func NewSuspiciousReceiver(db Database) *SuspiciousReceiver {
-	return &SuspiciousReceiver{db: db}
+func NewSuspiciousReceiver(replier *Replier) *SuspiciousReceiver {
+	return &SuspiciousReceiver{replier: replier}
 }
 
 // ServeHTTP handle POST requests, hashes the content and store it on db
@@ -47,7 +47,8 @@ func (h *SuspiciousReceiver) handlePost(wr http.ResponseWriter, req *http.Reques
 	var msg SuspiciousMessage
 	ok := parse(wr, b, &msg)
 	if ok {
-		writeSimpleResponse(wr, "Message received", 200)
+		sm, _ := h.replier.HashMessage(msg)
+		writeSimpleResponse(wr, sm, 200)
 	}
 }
 
@@ -66,7 +67,7 @@ func parse(wr http.ResponseWriter, b []byte, v ValidStruct) bool {
 
 func writeSimpleResponse(wr http.ResponseWriter, msg string, status int) {
 	wr.WriteHeader(status)
-	r, err := json.Marshal(Response{Message: msg})
+	r, err := json.Marshal(SimpleResponse{Message: msg})
 	if err == nil {
 		_, err = wr.Write(r)
 		if err != nil {

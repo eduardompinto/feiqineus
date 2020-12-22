@@ -1,6 +1,9 @@
 version: "3"
+networks:
+  rede:
+    driver: bridge
 services:
-  postgres:
+  database:
     image: postgres:11.4-alpine
     ports:
       - 5432:5432
@@ -9,3 +12,20 @@ services:
       - POSTGRES_PASSWORD=password
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - rede
+  stemmer:
+    build: text_stemmer/
+    ports:
+      - 8081:8081
+    networks:
+      - rede
+  app:
+    build: .
+    networks:
+      - rede
+    ports:
+      - 8080:8080
+    depends_on:
+      - database
+      - stemmer

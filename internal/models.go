@@ -5,19 +5,20 @@ type ValidStruct interface {
 	IsValid() bool
 }
 
-// Response simple response body with the Message field.
 // To be exposed on http handlers
-type Response struct {
+// SimpleResponse simple response body with the Message as string.
+type SimpleResponse struct {
 	Message string `json:"message"`
 }
 
-// SuspiciousMessage is a request body
+// SuspiciousMessage is possible fake news.
+// it contains the text (like a whats app message) and the link to follow it
 type SuspiciousMessage struct {
-	Message *string `json:"message"`
-	Link    *string `json:"link"`
+	Text *string `json:"message"`
+	Link *string `json:"link"`
 }
 
-// IsValid if Message and Link are present
+// IsValid if Text and Link are present
 func (sm *SuspiciousMessage) IsValid() bool {
-	return sm.Message != nil && sm.Link != nil
+	return sm.Text != nil && sm.Link != nil
 }

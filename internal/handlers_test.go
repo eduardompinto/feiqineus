@@ -14,9 +14,9 @@ func TestSuspiciousReceiver_ServeHTTP(t *testing.T) {
 	req, _ := http.NewRequest(http.MethodPost, "localhost:8080/suspicious", rb)
 	wr := httptest.NewRecorder()
 	receiver.ServeHTTP(wr, req)
-	var r Response
+	var r SimpleResponse
 	_ = json.Unmarshal(wr.Body.Bytes(), &r)
-	expected := "Message received"
+	expected := "Text received"
 	if r.Message != expected {
 		t.Errorf("Expected: [%s], Received: [%s]", expected, r.Message)
 	}
@@ -28,7 +28,7 @@ func TestSuspiciousReceiver_ServeHTTP_Invalid_Body(t *testing.T) {
 	req, _ := http.NewRequest(http.MethodPost, "localhost:8080/suspicious", rb)
 	wr := httptest.NewRecorder()
 	receiver.ServeHTTP(wr, req)
-	var r Response
+	var r SimpleResponse
 	_ = json.Unmarshal(wr.Body.Bytes(), &r)
 	expected := "Invalid request body"
 	if r.Message != expected {

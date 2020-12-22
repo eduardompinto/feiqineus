@@ -9,9 +9,11 @@ import (
 
 func main() {
 	db := internal.Database{}
+	db.Initialize()
 	defer db.Close()
 	mux := http.DefaultServeMux
-	mux.Handle("/suspicious", internal.NewSuspiciousReceiver(db))
+	replier := internal.NewReplier(db)
+	mux.Handle("/suspicious", internal.NewSuspiciousReceiver(&replier))
 	s := &http.Server{
 		Addr:           ":8080",
 		Handler:        mux,
@@ -20,5 +22,6 @@ func main() {
 		MaxHeaderBytes: 1 << 20,
 		IdleTimeout:    30 * time.Second,
 	}
+	log.Printf("Server started!")
 	log.Fatal(s.ListenAndServe())
 }

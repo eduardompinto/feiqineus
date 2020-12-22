@@ -1,14 +1,13 @@
 package internal
 
 import (
-	"context"
 	"fmt"
 	"github.com/jackc/pgx"
 	"os"
 )
 
 var config = pgx.ConnConfig{
-	Host:     "localhost",
+	Host:     "database",
 	Port:     5432,
 	Database: "feiqineus",
 	User:     "postgres",
@@ -17,14 +16,14 @@ var config = pgx.ConnConfig{
 
 // Database This holds the database connection pool and can acquire connections
 type Database struct {
-	pool *pgx.ConnPool
+	Pool *pgx.ConnPool
 }
 
 // Acquire a connection
-func (db *Database) Acquire() (*pgx.Conn, error) {
-	if db.pool == nil {
+func (db *Database) Initialize() {
+	if db.Pool == nil {
 		var err error
-		db.pool, err = pgx.NewConnPool(pgx.ConnPoolConfig{
+		db.Pool, err = pgx.NewConnPool(pgx.ConnPoolConfig{
 			ConnConfig:     config,
 			MaxConnections: 10,
 		})
@@ -33,10 +32,9 @@ func (db *Database) Acquire() (*pgx.Conn, error) {
 			os.Exit(1)
 		}
 	}
-	return db.pool.AcquireEx(context.Background())
 }
 
 // Close the connection pool
 func (db *Database) Close() {
-	db.pool.Close()
+	db.Pool.Close()
 }
