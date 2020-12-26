@@ -12,18 +12,23 @@ const contentType = "Content-Type"
 const applicationJSON = "application/json"
 const applicationText = "application/text"
 
-// SuspiciousReceiver handler to receive suspicious news
-type SuspiciousReceiver struct {
+// SuspiciousMessageHandler handler to receive suspicious news
+type SuspiciousMessageHandler struct {
 	replier *Replier
 }
 
+// SimpleResponse simple response body with the Message as string.
+type SimpleResponse struct {
+	Message string `json:"message"`
+}
+
 // NewSuspiciousReceiver constructor to keep db unexported
-func NewSuspiciousReceiver(replier *Replier) *SuspiciousReceiver {
-	return &SuspiciousReceiver{replier: replier}
+func NewSuspiciousReceiver(replier *Replier) *SuspiciousMessageHandler {
+	return &SuspiciousMessageHandler{replier: replier}
 }
 
 // ServeHTTP handle POST requests, hashes the content and store it on db
-func (h *SuspiciousReceiver) ServeHTTP(wr http.ResponseWriter, req *http.Request) {
+func (h *SuspiciousMessageHandler) ServeHTTP(wr http.ResponseWriter, req *http.Request) {
 	switch req.Method {
 	case http.MethodPost:
 		h.handlePost(wr, req)
@@ -34,7 +39,7 @@ func (h *SuspiciousReceiver) ServeHTTP(wr http.ResponseWriter, req *http.Request
 	}
 }
 
-func (h *SuspiciousReceiver) handlePost(wr http.ResponseWriter, req *http.Request) {
+func (h *SuspiciousMessageHandler) handlePost(wr http.ResponseWriter, req *http.Request) {
 	defer closeReq(req)
 	wr.Header().Add(contentType, applicationJSON)
 
@@ -45,24 +50,21 @@ func (h *SuspiciousReceiver) handlePost(wr http.ResponseWriter, req *http.Reques
 	}
 
 	var msg SuspiciousMessage
-	ok := parse(wr, b, &msg)
-	if ok {
-		sm, _ := h.replier.HashMessage(msg)
-		writeSimpleResponse(wr, sm, 200)
-	}
-}
-
-func parse(wr http.ResponseWriter, b []byte, v ValidStruct) bool {
-	err := json.Unmarshal(b, v)
-	if err != nil {
+	if err = json.Unmarshal(b, &msg); err != nil {
 		writeSimpleResponse(wr, "Can't parse the request body", 500)
-		return false
+		return
 	}
-	if !v.IsValid() {
+	if !msg.IsValid() {
 		writeSimpleResponse(wr, "Invalid request body", 400)
-		return false
+		return
 	}
-	return true
+	vm, err := h.replier.CheckMessage(msg)
+	if err != nil {
+		writeSimpleResponse(wr, "Deu ruinzao bicho, é natal", 500)
+	} else {
+		writeSimpleResponse(wr, vm.Verdict(), 200)
+	}
+
 }
 
 func writeSimpleResponse(wr http.ResponseWriter, msg string, status int) {

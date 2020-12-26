@@ -10,6 +10,7 @@ services:
     environment:
       - POSTGRES_USERNAME=postgres
       - POSTGRES_PASSWORD=password
+      - PGSSLMODE=allow
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
@@ -22,6 +23,10 @@ services:
       - rede
   app:
     build: .
+    environment:
+      - STEMMER_HOST=stemmer
+      - STEMMER_PORT=8081
+      - DATABASE_HOST=database
     networks:
       - rede
     ports:

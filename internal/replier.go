@@ -1,44 +1,42 @@
 package internal
 
-import (
-	"crypto/sha1"
-	"fmt"
-	"io/ioutil"
-	"net/http"
-	"strings"
-)
-
-// Replier: receive a SuspiciousMessage and
+// Replier receive a SuspiciousMessage and
 type Replier struct {
-	db Database
+	verifiedMessageGetter VerifiedMessageGetter
+	verifiedMessageSaver  VerifiedMessageSaver
+	textNormalizer        TextNormalizer
 }
 
 // NewReplier creates a new instance of the Replier struct
-func NewReplier(db Database) Replier {
-	return Replier{db: db}
-}
-
-// HashMessage take the portuguese stemme and hashes it
-func (r *Replier) HashMessage(sm SuspiciousMessage) (string, error) {
-	st, err := getStemmedText(*sm.Text)
-	if err != nil {
-		return "", err
+func NewReplier(getter VerifiedMessageGetter, saver VerifiedMessageSaver) Replier {
+	return Replier{
+		verifiedMessageGetter: getter,
+		verifiedMessageSaver:  saver,
+		textNormalizer:        NewStemmer(),
 	}
-	h := sha1.New()
-	h.Write([]byte(*st))
-	bs := h.Sum(nil)
-	return fmt.Sprintf("%x", bs), nil
 }
 
-func getStemmedText(text string) (*string, error) {
-	resp, err := http.Post("http://stemmer:8081/stemmer", "text/plain", strings.NewReader(text))
+func (r *Replier) CheckMessage(sm SuspiciousMessage) (*VerifiedMessage, error) {
+	var text = *sm.Text
+	t, err := r.textNormalizer.Normalize(text)
 	if err != nil {
 		return nil, err
 	}
-	defer func() {
-		_ = resp.Body.Close()
-	}()
-	b, _ := ioutil.ReadAll(resp.Body)
-	s := string(b)
-	return &s, nil
+	vm := r.verifiedMessageGetter.Get(t)
+	if vm != nil {
+		return vm, nil
+	}
+	vm, err = r.createVerifiedMessage(sm, t)
+	if err != nil {
+		return nil, err
+	}
+	return vm, nil
+}
+
+func (r *Replier) createVerifiedMessage(sm SuspiciousMessage, textNormalized string) (*VerifiedMessage, error) {
+	vm := NewVerifiedMessage(*sm.Text, textNormalized, sm.Link)
+	if err := r.verifiedMessageSaver.Save(&vm); err != nil {
+		return nil, err
+	}
+	return &vm, nil
 }

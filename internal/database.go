@@ -6,8 +6,16 @@ import (
 	"os"
 )
 
+func getDBHost() string {
+	h, ok := os.LookupEnv("DATABASE_HOST")
+	if ok {
+		return h
+	}
+	return "localhost"
+}
+
 var config = pgx.ConnConfig{
-	Host:     "database",
+	Host:     getDBHost(),
 	Port:     5432,
 	Database: "feiqineus",
 	User:     "postgres",
@@ -19,18 +27,19 @@ type Database struct {
 	Pool *pgx.ConnPool
 }
 
-// Acquire a connection
+// Initialize the db connection
 func (db *Database) Initialize() {
-	if db.Pool == nil {
-		var err error
-		db.Pool, err = pgx.NewConnPool(pgx.ConnPoolConfig{
-			ConnConfig:     config,
-			MaxConnections: 10,
-		})
-		if err != nil {
-			_, _ = fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
-			os.Exit(1)
-		}
+	if db.Pool != nil {
+		return
+	}
+	var err error
+	db.Pool, err = pgx.NewConnPool(pgx.ConnPoolConfig{
+		ConnConfig:     config,
+		MaxConnections: 10,
+	})
+	if err != nil {
+		_, _ = fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+		os.Exit(1)
 	}
 }
 

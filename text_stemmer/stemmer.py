@@ -18,8 +18,7 @@ class Stemmer:
 
     async def _portuguese_stemming(self, sentence):
         sentence = await self._clean_sentence(sentence)
-        stem = ' '.join(self._stemmer.stem(word) for word in sentence.split(' '))
-        stem = sorted(stem.split(' '))
+        stem = sorted(set(self._stemmer.stem(word) for word in sentence.split(' ')))
         return ' '.join(stem)
 
     async def _clean_sentence(self, sentence):

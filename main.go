@@ -12,7 +12,8 @@ func main() {
 	db.Initialize()
 	defer db.Close()
 	mux := http.DefaultServeMux
-	replier := internal.NewReplier(db)
+	vmdb := internal.NewVerifiedMessageDB(db)
+	replier := internal.NewReplier(vmdb, vmdb)
 	mux.Handle("/suspicious", internal.NewSuspiciousReceiver(&replier))
 	s := &http.Server{
 		Addr:           ":8080",

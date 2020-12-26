@@ -9,7 +9,7 @@ import (
 )
 
 func TestSuspiciousReceiver_ServeHTTP(t *testing.T) {
-	receiver := SuspiciousReceiver{}
+	receiver := SuspiciousMessageHandler{}
 	rb := strings.NewReader(`{"message": "example", "link": "http://google.com"}`)
 	req, _ := http.NewRequest(http.MethodPost, "localhost:8080/suspicious", rb)
 	wr := httptest.NewRecorder()
@@ -23,7 +23,7 @@ func TestSuspiciousReceiver_ServeHTTP(t *testing.T) {
 }
 
 func TestSuspiciousReceiver_ServeHTTP_Invalid_Body(t *testing.T) {
-	receiver := SuspiciousReceiver{}
+	receiver := SuspiciousMessageHandler{}
 	rb := strings.NewReader(`{"msg": "example", "link": "http://google.com"}`)
 	req, _ := http.NewRequest(http.MethodPost, "localhost:8080/suspicious", rb)
 	wr := httptest.NewRecorder()
