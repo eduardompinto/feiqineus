@@ -8,8 +8,7 @@ import (
 )
 
 func main() {
-	db := internal.Database{}
-	db.Initialize()
+	db := internal.NewDatabase()
 	defer db.Close()
 	mux := http.DefaultServeMux
 	vmdb := internal.NewVerifiedMessageDB(db)

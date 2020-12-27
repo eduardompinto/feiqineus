@@ -27,13 +27,8 @@ type Database struct {
 	Pool *pgx.ConnPool
 }
 
-// Initialize the db connection
-func (db *Database) Initialize() {
-	if db.Pool != nil {
-		return
-	}
-	var err error
-	db.Pool, err = pgx.NewConnPool(pgx.ConnPoolConfig{
+func NewDatabase() *Database {
+	pool, err := pgx.NewConnPool(pgx.ConnPoolConfig{
 		ConnConfig:     config,
 		MaxConnections: 10,
 	})
@@ -41,6 +36,7 @@ func (db *Database) Initialize() {
 		_, _ = fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
 	}
+	return &Database{Pool: pool}
 }
 
 // Close the connection pool

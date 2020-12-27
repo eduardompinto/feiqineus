@@ -1,16 +1,15 @@
 package internal
 
 type VerifiedMessageDB struct {
-	db Database
+	db *Database
 }
 
 // NewVerifiedMessageDB return a new VerifiedMessageDB
-func NewVerifiedMessageDB(db Database) VerifiedMessageDB {
+func NewVerifiedMessageDB(db *Database) VerifiedMessageDB {
 	return VerifiedMessageDB{db: db}
 }
 
 func (r VerifiedMessageDB) Get(message string) *VerifiedMessage {
-	r.db.Initialize()
 	q := `
 		SELECT 
 			id, first_appear, text, link, is_fake, explanation, checked, text_normalized
@@ -43,7 +42,6 @@ func (r VerifiedMessageDB) Get(message string) *VerifiedMessage {
 }
 
 func (r VerifiedMessageDB) Save(vm *VerifiedMessage) error {
-	r.db.Initialize()
 	q := `
 		INSERT INTO 
 			verified_messages (id, first_appear, text, link, is_fake, explanation, checked, text_normalized) 
