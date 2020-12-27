@@ -53,7 +53,7 @@ func (vm *VerifiedMessage) Verdict() string {
 }
 
 func (vm *VerifiedMessage) getInconclusiveVerdictMessage() string {
-	return fmt.Sprintf("Não consegui chegar a uma conclusão sobre isso. Veja o que eu sei sobre: %s", vm.Explanation)
+	return fmt.Sprintf("Não consegui chegar a uma conclusão sobre isso. Veja o que eu sei sobre isso: %s", vm.Explanation)
 }
 
 func (vm *VerifiedMessage) getUncheckedVerdictMessage() string {
@@ -62,14 +62,14 @@ func (vm *VerifiedMessage) getUncheckedVerdictMessage() string {
 
 func (vm *VerifiedMessage) getGenuineVerdictMessage() string {
 	return fmt.Sprintf(
-		`A informação parece ser verdadeira, mas ainda assim leia o que sei sobre isso: "%s"`,
+		`A informação parece ser verdadeira, mas ainda assim leia o que sei sobre isso: %s`,
 		vm.Explanation,
 	)
 }
 
 func (vm *VerifiedMessage) getFakeVerdictMessage() string {
 	return fmt.Sprintf(
-		`Essa mensagem é falsa! Veja aqui o motivo: "%s"`,
+		`Essa mensagem é falsa! Veja o que eu sei sobre isso: %s`,
 		vm.Explanation,
 	)
 }

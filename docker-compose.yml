@@ -27,6 +27,7 @@ services:
       - STEMMER_HOST=stemmer
       - STEMMER_PORT=8081
       - DATABASE_HOST=database
+      - "TELEGRAM_TOKEN=${TELEGRAM_TOKEN}"
     networks:
       - rede
     ports:

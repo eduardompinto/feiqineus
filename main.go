@@ -14,6 +14,7 @@ func main() {
 	mux := http.DefaultServeMux
 	vmdb := internal.NewVerifiedMessageDB(db)
 	replier := internal.NewReplier(vmdb, vmdb)
+	internal.NewTelegramIntegration(&replier).Init()
 	mux.Handle("/suspicious", internal.NewSuspiciousReceiver(&replier))
 	s := &http.Server{
 		Addr:           ":8080",
