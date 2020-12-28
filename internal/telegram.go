@@ -50,6 +50,12 @@ func (t *TelegramIntegration) process() {
 			continue
 		}
 
+		log.Printf(
+			"Message received on Telegram. From: [%s]; Message: [%s]",
+			update.Message.Chat.UserName,
+			update.Message.Text,
+		)
+
 		if t.replyCommand(update) {
 			continue
 		}
