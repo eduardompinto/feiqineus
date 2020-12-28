@@ -4,22 +4,23 @@ import (
 	"fmt"
 	"github.com/jackc/pgx"
 	"os"
+	"strconv"
 )
 
-func getDBHost() string {
-	h, ok := os.LookupEnv("DATABASE_HOST")
-	if ok {
-		return h
+func getDBPort() uint16 {
+	dbPort, err := strconv.Atoi(EnvOrDefault("DATABASE_PORT", "5432"))
+	if err != nil {
+		return 5432
 	}
-	return "localhost"
+	return uint16(dbPort)
 }
 
 var config = pgx.ConnConfig{
-	Host:     getDBHost(),
-	Port:     5432,
-	Database: "feiqineus",
-	User:     "postgres",
-	Password: "password",
+	Host:     EnvOrDefault("DATABASE_HOST", "localhost"),
+	Port:     getDBPort(),
+	Database: EnvOrDefault("DATABASE_NAME", "feiqineus"),
+	User:     EnvOrDefault("DATABASE_USER", "postgres"),
+	Password: EnvOrDefault("DATABASE_PASSWORD", "password"),
 }
 
 // Database This holds the database connection pool and can acquire connections

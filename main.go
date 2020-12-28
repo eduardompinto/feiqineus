@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/eduardompinto/feiqineus/internal"
 	"log"
 	"net/http"
@@ -15,8 +16,9 @@ func main() {
 	replier := internal.NewReplier(vmdb, vmdb)
 	internal.NewTelegramIntegration(&replier).Init()
 	mux.Handle("/suspicious", internal.NewSuspiciousReceiver(&replier))
+	port := internal.EnvOrDefault("PORT", "8080")
 	s := &http.Server{
-		Addr:           ":8080",
+		Addr:           fmt.Sprintf(":%s", port),
 		Handler:        mux,
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,

@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 	"strings"
 )
 
@@ -14,18 +13,10 @@ type Stemmer struct {
 	port string
 }
 
-func envOrDefault(env string, def string) string {
-	e, ok := os.LookupEnv(env)
-	if ok {
-		return e
-	}
-	return def
-}
-
 func NewStemmer() *Stemmer {
 	return &Stemmer{
-		host: envOrDefault("STEMMER_HOST", "localhost"),
-		port: envOrDefault("STEMMER_PORT", "8081"),
+		host: EnvOrDefault("STEMMER_HOST", "localhost"),
+		port: EnvOrDefault("STEMMER_PORT", "8081"),
 	}
 }
 
