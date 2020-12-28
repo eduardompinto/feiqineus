@@ -15,18 +15,12 @@ services:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - rede
-  stemmer:
-    build: text_stemmer/
-    ports:
-      - 8081:8081
-    networks:
-      - rede
   app:
     build: .
     environment:
-      - STEMMER_HOST=stemmer
-      - STEMMER_PORT=8081
-      - DATABASE_HOST=database
+      - "STEMMER_HOST=${STEMMER_HOST}"
+      - "STEMMER_PORT=${STEMMER_PORT}"
+      - "DATABASE_HOST=${DATABASE_HOST}"
       - "TELEGRAM_TOKEN=${TELEGRAM_TOKEN}"
     networks:
       - rede
@@ -34,4 +28,3 @@ services:
       - 8080:8080
     depends_on:
       - database
-      - stemmer

@@ -2,6 +2,7 @@ package internal
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
@@ -60,7 +61,8 @@ func (h *SuspiciousMessageHandler) handlePost(wr http.ResponseWriter, req *http.
 	}
 	vm, err := h.replier.CheckMessage(msg)
 	if err != nil {
-		writeSimpleResponse(wr, "Deu ruinzao bicho, é natal", 500)
+		log.Println(err)
+		writeSimpleResponse(wr, fmt.Sprintf("Can't check message, %v", err), 500)
 	} else {
 		writeSimpleResponse(wr, vm.Verdict(), 200)
 	}

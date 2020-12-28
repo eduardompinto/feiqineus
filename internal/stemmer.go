@@ -14,26 +14,18 @@ type Stemmer struct {
 	port string
 }
 
-func getStemmerHost() string {
-	h, ok := os.LookupEnv("STEMMER_HOST")
+func envOrDefault(env string, def string) string {
+	e, ok := os.LookupEnv(env)
 	if ok {
-		return h
+		return e
 	}
-	return "localhost"
-}
-
-func getStemmerPort() string {
-	p, ok := os.LookupEnv("STEMMER_PORT")
-	if ok {
-		return p
-	}
-	return "8081"
+	return def
 }
 
 func NewStemmer() *Stemmer {
 	return &Stemmer{
-		host: getStemmerHost(),
-		port: getStemmerPort(),
+		host: envOrDefault("STEMMER_HOST", "localhost"),
+		port: envOrDefault("STEMMER_PORT", "8081"),
 	}
 }
 
@@ -46,7 +38,7 @@ func (s *Stemmer) Normalize(text string) (string, error) {
 	defer func() {
 		err = resp.Body.Close()
 		if err != nil {
-			log.Printf("Can't close stemmer response body to text %s\n", text)
+			log.Printf("Can't close stemmer response body to text %s", text)
 		}
 	}()
 	b, err := ioutil.ReadAll(resp.Body)
