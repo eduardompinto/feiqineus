@@ -3,7 +3,7 @@ WORKDIR /build
 COPY . /build
 RUN go build .
 
-FROM python:3.9.1-buster
+FROM python:3.9.1-slim-buster
 ENV PYTHONPATH=/app
 WORKDIR /app
 COPY text_stemmer/ /app
