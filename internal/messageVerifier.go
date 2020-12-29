@@ -46,11 +46,10 @@ func (r VerifiedMessageDB) Save(vm *VerifiedMessage) error {
 		INSERT INTO 
 			verified_messages (id, first_appear, text, link, is_fake, explanation, checked, text_normalized) 
 		VALUES 
-			($1, $2, $3, $4, $5, $6, $7, $8)
+			(DEFAULT, $1, $2, $3, $4, $5, $6, $7)
 	`
 	_, err := r.db.Pool.Query(
 		q,
-		vm.ID,
 		vm.FirstAppear,
 		vm.Text,
 		vm.Link,

@@ -2,7 +2,6 @@ package internal
 
 import (
 	"fmt"
-	"github.com/google/uuid"
 	"time"
 )
 
@@ -24,7 +23,7 @@ func (sm *SuspiciousMessage) IsValid() bool {
 }
 
 type VerifiedMessage struct {
-	ID             string
+	ID             int32
 	Checked        bool
 	Explanation    string
 	FirstAppear    time.Time
@@ -80,7 +79,6 @@ func NewVerifiedMessage(text string, textNormalized string, link *string) Verifi
 		l = *link
 	}
 	return VerifiedMessage{
-		ID:             uuid.New().String(),
 		Checked:        false,
 		Explanation:    "",
 		FirstAppear:    time.Now(),

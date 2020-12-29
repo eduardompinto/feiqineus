@@ -2,7 +2,7 @@ create extension if not exists pg_trgm;
 
 create table if not exists verified_messages
 (
-    id              character varying(36)    not null,
+    id              serial primary key,
     checked         boolean default false,
     explanation     text                     null,
     first_appear    timestamp with time zone not null,
