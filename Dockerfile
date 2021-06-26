@@ -1,7 +1,7 @@
 ## Build telegram bot
 FROM golang:buster as BUILD
 WORKDIR /build
-COPY . /build
+COPY bot/ /build
 RUN go build .
 
 ## Run time for python app
