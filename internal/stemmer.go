@@ -16,7 +16,7 @@ type Stemmer struct {
 func NewStemmer() *Stemmer {
 	return &Stemmer{
 		host: EnvOrDefault("STEMMER_HOST", "localhost"),
-		port: EnvOrDefault("STEMMER_PORT", "8081"),
+		port: EnvOrDefault("STEMMER_PORT", "8000"),
 	}
 }
 

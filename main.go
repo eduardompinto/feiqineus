@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/eduardompinto/feiqineus/internal"
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/eduardompinto/feiqineus/internal"
 )
 
 func main() {
