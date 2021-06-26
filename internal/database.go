@@ -2,10 +2,11 @@ package internal
 
 import (
 	"fmt"
-	"github.com/jackc/pgx"
 	"log"
 	"os"
 	"strconv"
+
+	"github.com/jackc/pgx"
 )
 
 // Database This holds the database connection pool and can acquire connections

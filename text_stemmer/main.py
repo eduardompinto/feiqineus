@@ -1,17 +1,15 @@
-from aiohttp import web
+from fastapi import FastAPI, Request
 
 from stemmer import Stemmer
 
 _stemmer = Stemmer()
 
-
-async def handle(request):
-    text = await _stemmer.apply(await request.text())
-    return web.Response(text=text)
+app = FastAPI()
 
 
-app = web.Application()
-app.add_routes([web.post('/stemmer', handle)])
+@app.post("/stemmer")
+async def handle(req: Request):
+    text_to_parse = await req.body()
+    text = await _stemmer.apply(text_to_parse.decode("utf-8"))
+    return text
 
-if __name__ == '__main__':
-    web.run_app(app, port=8081)
